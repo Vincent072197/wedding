@@ -9,10 +9,10 @@ export default function GalleryPage() {
         {/* We reuse the IGPostBoard here, but pad the top so it's not under the Navbar */}
         <IGPostBoard />
       </main>
-      
-      <footer className="py-8 text-center text-stone-500 text-sm font-sans tracking-widest uppercase border-t border-stone-200 bg-white">
-        <p>© 2026 Vincent &amp; Sister. All rights reserved.</p>
-      </footer>
+
+      {/* <footer className="py-8 text-center text-stone-500 text-sm font-sans tracking-widest uppercase border-t border-stone-200 bg-white">
+    
+      </footer> */}
     </div>
   );
 }
