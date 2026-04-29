@@ -17,7 +17,8 @@ export default function CountdownTimer() {
       .then((res) => res.json())
       .then((data) => {
         if (data.home?.weddingDate) {
-          setTargetDate(new Date(data.home.weddingDate).getTime());
+          const d = data.home.weddingDate.slice(0, 10);
+          setTargetDate(new Date(`${d}T00:00:00`).getTime());
         }
       })
       .catch(console.error);

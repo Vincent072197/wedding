@@ -353,15 +353,13 @@ export default function AdminPage() {
       <div>
         <FieldLabel>Wedding Date — Countdown Target (婚禮日期)</FieldLabel>
         <input
-          type="datetime-local"
+          type="date"
           value={
             config.home.weddingDate
-              ? new Date(config.home.weddingDate).toISOString().slice(0, 16)
+              ? new Date(config.home.weddingDate).toISOString().slice(0, 10)
               : ""
           }
-          onChange={(e) =>
-            updateHome("weddingDate", new Date(e.target.value).toISOString())
-          }
+          onChange={(e) => updateHome("weddingDate", e.target.value)}
           className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
         />
       </div>
