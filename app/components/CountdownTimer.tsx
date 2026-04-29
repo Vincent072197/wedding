@@ -16,8 +16,8 @@ export default function CountdownTimer() {
     fetch("/api/config")
       .then((res) => res.json())
       .then((data) => {
-        if (data.weddingDate) {
-          setTargetDate(new Date(data.weddingDate).getTime());
+        if (data.home?.weddingDate) {
+          setTargetDate(new Date(data.home.weddingDate).getTime());
         }
       })
       .catch(console.error);

@@ -1,5 +1,69 @@
 {
-  "coupleNames": "宣宣 & 季璇",
-  "weddingDate": "2026-10-20T00:00:00",
-  "galleryImages": ["/post01.jpg", "/post02.jpg"]
+  "home": {
+    "coupleNames": "宣宣 & 季璇",
+    "heroText": "We decided on forever",
+    "weddingDate": "2026-10-20T00:00:00"
+  },
+  "gallery": {
+    "galleryImages": [
+      "/post01.jpg",
+      "/post02.jpg"
+    ],
+    "igCaption": "We can't wait to share our special day with all of you! Leave us a blessing below. ✨"
+  },
+  "menu": {
+    "menuTitle": "Wedding Menu",
+    "menuSubtitle": "A Feast to Celebrate",
+    "menuFooterText": "Bon Appétit",
+    "menuCategories": [
+      {
+        "categoryName": "Appetizers",
+        "items": [
+          {
+            "nameCn": "龍蝦沙拉佐魚子醬",
+            "nameEn": "Lobster Salad with Caviar"
+          },
+          {
+            "nameCn": "松露野菇濃湯",
+            "nameEn": "Truffle Mushroom Soup"
+          }
+        ]
+      },
+      {
+        "categoryName": "Main Course",
+        "items": [
+          {
+            "nameCn": "法式慢燉紅酒牛頰",
+            "nameEn": "French Slow-Cooked Red Wine Beef Cheek"
+          },
+          {
+            "nameCn": "香煎北海道干貝佐海膽醬",
+            "nameEn": "Seared Hokkaido Scallops with Uni Sauce"
+          }
+        ]
+      },
+      {
+        "categoryName": "Desserts & Drinks",
+        "items": [
+          {
+            "nameCn": "經典法式千層酥",
+            "nameEn": "Classic Mille-Feuille"
+          },
+          {
+            "nameCn": "手沖莊園咖啡 & 伯爵茶",
+            "nameEn": "Pour-over Coffee & Earl Grey Tea"
+          }
+        ]
+      }
+    ]
+  },
+  "location": {
+    "locationTitle": "Location & Transport",
+    "locationDescription": "We are excited to celebrate with you. Below you will find all the details regarding our wedding venue, parking, and transportation.",
+    "venueName": "The Grand Ballroom Hotel",
+    "venueAddress": "123 Wedding Blvd, Romance City, RC 90210",
+    "parkingInfo": "Complimentary valet parking is available at the main entrance. Self-parking is located in the underground garage (Level B1 & B2). Please validate your ticket at the reception.",
+    "shuttleInfo": "A shuttle bus will depart from Central Station (Exit 3) every 30 minutes starting from 4:00 PM. The last return shuttle will leave the venue at 11:00 PM.",
+    "mapEmbedUrl": ""
+  }
 }

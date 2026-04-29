@@ -14,7 +14,12 @@ export default function StorySection() {
     fetch("/api/config")
       .then((res) => res.json())
       .then((data) => {
-        if (data.coupleNames) setConfig(data);
+        if (data.home?.coupleNames) {
+          setConfig({
+            coupleNames: data.home.coupleNames,
+            heroText: data.home.heroText || config.heroText,
+          });
+        }
       })
       .catch(console.error);
   }, []);

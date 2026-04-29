@@ -8,35 +8,41 @@ import Image from "next/image";
 
 type Comment = {
   id: number;
-  author: string;
-  text: string;
+  guest_name: string;
+  message: string;
 };
 
 export default function IGPostBoard() {
   const [emblaRef] = useEmblaCarousel({ loop: true });
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(1204);
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: 1,
-      author: "family_friend",
-      text: "Congratulations! So happy for you two! ❤️",
-    },
-    { id: 2, author: "bestie_99", text: "Can't wait for the big day! 🎉" },
-  ]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
-
+  const [guestName, setGuestName] = useState("");
   const [config, setConfig] = useState({
     coupleNames: "Vincent & Sister",
     galleryImages: ["/post01.jpg"],
+    igCaption:
+      "We can't wait to share our special day with all of you! Leave us a blessing below. ✨",
   });
 
   useEffect(() => {
     fetch("/api/config")
       .then((res) => res.json())
       .then((data) => {
-        if (data.coupleNames) setConfig(data);
+        if (data.home?.coupleNames) {
+          setConfig({
+            coupleNames: data.home.coupleNames,
+            galleryImages: data.gallery?.galleryImages || config.galleryImages,
+            igCaption: data.gallery?.igCaption || config.igCaption,
+          });
+        }
       })
+      .catch(console.error);
+
+    fetch("/api/guestbook")
+      .then((resp) => resp.json())
+      .then((data) => setComments(data))
       .catch(console.error);
   }, []);
 
@@ -55,18 +61,21 @@ export default function IGPostBoard() {
     setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
   };
 
-  const handlePostComment = (e: React.FormEvent) => {
+  const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-
-    const comment: Comment = {
-      id: Date.now(),
-      author: "guest_visitor", // Mock username
-      text: newComment.trim(),
-    };
-
-    setComments([...comments, comment]);
+    const res = await fetch("/api/guestbook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        guestName,
+        message: newComment.trim(),
+      }),
+    });
+    const newPost = await res.json();
+    setComments((prev) => [...prev, newPost]);
     setNewComment("");
+    setGuestName("");
   };
 
   return (
@@ -138,16 +147,15 @@ export default function IGPostBoard() {
 
           <div className="text-sm mb-3">
             <span className="font-semibold mr-2">{handleText}</span>
-            We can't wait to share our special day with all of you! Leave us a
-            blessing below. ✨
+            {config.igCaption}
           </div>
 
           {/* Comments Section (留言區) */}
           <div className="space-y-1 mb-4 max-h-32 overflow-y-auto custom-scrollbar">
             {comments.map((c) => (
               <div key={c.id} className="text-sm">
-                <span className="font-semibold mr-2">{c.author}</span>
-                <span>{c.text}</span>
+                <span className="font-semibold mr-2">{c.guest_name}</span>
+                <span>{c.message}</span>
               </div>
             ))}
           </div>
@@ -158,6 +166,13 @@ export default function IGPostBoard() {
           onSubmit={handlePostComment}
           className="flex items-center px-4 py-3 border-t border-stone-100"
         >
+          <input
+            type="text"
+            value={guestName}
+            onChange={(e) => setGuestName(e.target.value)}
+            placeholder="Your name..."
+            className="flex-1 outline-none text-sm bg-transparent border-b border-stone-100 mb-2"
+          />
           <input
             type="text"
             value={newComment}
