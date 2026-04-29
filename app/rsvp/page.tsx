@@ -52,11 +52,10 @@ export default function RsvpPage() {
         <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
           <h2 className="font-serif text-4xl text-stone-800 mb-4">
-            Thank You! 🎉
+            感謝您的回覆！🎉
           </h2>
           <p className="font-sans text-stone-500">
-            Your RSVP has been received. We can&apos;t wait to celebrate with
-            you!
+            我們已收到您的回覆，期待與您共度這美好的一天！
           </p>
         </main>
       </div>
@@ -69,9 +68,9 @@ export default function RsvpPage() {
       <main className="flex-1 w-full pt-32 pb-20 px-4 flex justify-center">
         <div className="w-full max-w-lg">
           <div className="text-center mb-10">
-            <h1 className="font-serif text-4xl text-stone-800 mb-2">RSVP</h1>
+            <h1 className="font-serif text-4xl text-stone-800 mb-2">出席確認</h1>
             <p className="font-sans text-stone-500 text-sm tracking-wide">
-              Please respond by September 1, 2026
+              請於 2026 年 9 月 1 日前回覆
             </p>
           </div>
 
@@ -82,14 +81,14 @@ export default function RsvpPage() {
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-stone-700 mb-2">
-                Full Name *
+                姓名 *
               </label>
               <input
                 type="text"
                 required
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
-                placeholder="Your full name"
+                placeholder="您的姓名"
                 className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
               />
             </div>
@@ -97,7 +96,7 @@ export default function RsvpPage() {
             {/* Phone */}
             <div>
               <label className="block text-sm font-semibold text-stone-700 mb-2">
-                Phone Number *
+                電話號碼 *
               </label>
               <input
                 type="tel"
@@ -108,15 +107,14 @@ export default function RsvpPage() {
                 className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
               />
               <p className="text-xs text-stone-400 mt-1">
-                Used to identify your RSVP — you can update it anytime with the
-                same number.
+                用於識別您的出席紀錄，之後可用同一號碼更新回覆。
               </p>
             </div>
 
             {/* Attending */}
             <div>
               <label className="block text-sm font-semibold text-stone-700 mb-3">
-                Will you attend? *
+                是否出席？*
               </label>
               <div className="flex gap-4">
                 {(["yes", "no"] as const).map((option) => (
@@ -131,8 +129,8 @@ export default function RsvpPage() {
                     }`}
                   >
                     {option === "yes"
-                      ? "✓ Joyfully Accept"
-                      : "✗ Regretfully Decline"}
+                      ? "✓ 欣然接受"
+                      : "✗ 婉拒出席"}
                   </button>
                 ))}
               </div>
@@ -145,7 +143,7 @@ export default function RsvpPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-stone-700 mb-2">
-                      Adults
+                      大人
                     </label>
                     <input
                       type="number"
@@ -159,7 +157,7 @@ export default function RsvpPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-stone-700 mb-2">
-                      Children
+                      小孩
                     </label>
                     <input
                       type="number"
@@ -176,16 +174,16 @@ export default function RsvpPage() {
                 {/* Meal preference */}
                 <div>
                   <label className="block text-sm font-semibold text-stone-700 mb-2">
-                    Meal Preference
+                    餐點需求
                   </label>
                   <select
                     value={form.mealPreference}
                     onChange={(e) => update("mealPreference", e.target.value)}
                     className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
                   >
-                    <option value="regular">Regular</option>
-                    <option value="vegetarian">Vegetarian</option>
-                    <option value="vegan">Vegan</option>
+                    <option value="regular">一般</option>
+                    <option value="vegetarian">素食</option>
+                    <option value="vegan">全素</option>
                   </select>
                 </div>
               </>
@@ -194,12 +192,12 @@ export default function RsvpPage() {
             {/* Note */}
             <div>
               <label className="block text-sm font-semibold text-stone-700 mb-2">
-                Message to the Couple
+                留言給新人
               </label>
               <textarea
                 value={form.note}
                 onChange={(e) => update("note", e.target.value)}
-                placeholder="Leave us a sweet message..."
+                placeholder="留下您的祝福..."
                 rows={3}
                 className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary resize-y"
               />
@@ -207,7 +205,7 @@ export default function RsvpPage() {
 
             {status === "error" && (
               <p className="text-red-500 text-sm">
-                Something went wrong. Please try again.
+                發生錯誤，請再試一次。
               </p>
             )}
 
@@ -222,7 +220,7 @@ export default function RsvpPage() {
               className="w-full bg-primary text-white py-3 rounded font-semibold hover:bg-rose-600 transition-colors               
   disabled:opacity-50"
             >
-              {status === "loading" ? "Submitting..." : "Send RSVP"}
+              {status === "loading" ? "送出中..." : "送出回覆"}
             </button>
           </form>
         </div>

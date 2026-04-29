@@ -14,15 +14,12 @@ type LocationConfig = {
 };
 
 const defaultLocationConfig: LocationConfig = {
-  locationTitle: "Location & Transport",
-  locationDescription:
-    "We are excited to celebrate with you. Below you will find all the details regarding our wedding venue, parking, and transportation.",
-  venueName: "The Grand Ballroom Hotel",
-  venueAddress: "123 Wedding Blvd, Romance City, RC 90210",
-  parkingInfo:
-    "Complimentary valet parking is available at the main entrance. Self-parking is located in the underground garage (Level B1 & B2). Please validate your ticket at the reception.",
-  shuttleInfo:
-    "A shuttle bus will depart from Central Station (Exit 3) every 30 minutes starting from 4:00 PM. The last return shuttle will leave the venue at 11:00 PM.",
+  locationTitle: "婚宴地點與交通",
+  locationDescription: "非常期待與您共度這特別的一天！以下是婚宴場地及交通相關資訊。",
+  venueName: "",
+  venueAddress: "",
+  parkingInfo: "",
+  shuttleInfo: "",
   mapEmbedUrl: "",
 };
 
@@ -58,7 +55,7 @@ export default function LocationPage() {
           <div className="bg-white p-8 rounded-sm shadow-sm border border-stone-100 flex flex-col justify-center">
             <div className="mb-8">
               <h2 className="font-serif text-2xl text-primary mb-2">
-                Venue (婚宴會館)
+                婚宴會館
               </h2>
               <p className="font-sans font-semibold text-stone-800">
                 {config.venueName}
@@ -70,14 +67,14 @@ export default function LocationPage() {
 
             <div className="mb-8">
               <h2 className="font-serif text-2xl text-primary mb-2">
-                Parking (停車資訊)
+                停車資訊
               </h2>
               <p className="font-sans text-stone-600">{config.parkingInfo}</p>
             </div>
 
             <div>
               <h2 className="font-serif text-2xl text-primary mb-2">
-                Shuttle Bus (接駁車)
+                接駁車
               </h2>
               <p className="font-sans text-stone-600">{config.shuttleInfo}</p>
             </div>
@@ -102,10 +99,10 @@ export default function LocationPage() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center opacity-30" />
                 <div className="relative z-10 bg-white/90 backdrop-blur px-6 py-4 rounded shadow-lg text-center">
                   <span className="font-sans font-semibold text-stone-800 block mb-1">
-                    Google Maps iframe
+                    Google 地圖
                   </span>
                   <span className="text-sm text-stone-500">
-                    Set the embed URL in admin panel
+                    請在後台設定地圖網址
                   </span>
                 </div>
               </>

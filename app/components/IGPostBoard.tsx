@@ -15,12 +15,12 @@ type Comment = {
 export default function IGPostBoard() {
   const [emblaRef] = useEmblaCarousel({ loop: true });
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(1204);
+  const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [guestName, setGuestName] = useState("");
   const [config, setConfig] = useState({
-    coupleNames: "Vincent & Sister",
+    coupleNames: "",
     galleryImages: ["/post01.jpg"],
     igCaption:
       "We can't wait to share our special day with all of you! Leave us a blessing below. ✨",
@@ -81,7 +81,7 @@ export default function IGPostBoard() {
   return (
     <section
       id="guestbook"
-      className="py-20 bg-stone-50 flex justify-center px-4"
+      className="py-10 md:py-20 bg-stone-50 flex justify-center px-4 w-full overflow-x-hidden"
     >
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -142,7 +142,7 @@ export default function IGPostBoard() {
           </div>
 
           <div className="font-semibold text-sm mb-2">
-            {likesCount.toLocaleString()} likes
+            {likesCount.toLocaleString()} 個讚
           </div>
 
           <div className="text-sm mb-3">
@@ -164,29 +164,31 @@ export default function IGPostBoard() {
         {/* Comment Input Form */}
         <form
           onSubmit={handlePostComment}
-          className="flex items-center px-4 py-3 border-t border-stone-100"
+          className="px-4 py-3 border-t border-stone-100"
         >
           <input
             type="text"
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
-            placeholder="Your name..."
-            className="flex-1 outline-none text-sm bg-transparent border-b border-stone-100 mb-2"
+            placeholder="您的姓名..."
+            className="w-full outline-none text-sm bg-transparent border-b border-stone-200 pb-1 mb-2"
           />
-          <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment..."
-            className="flex-1 outline-none text-sm bg-transparent"
-          />
-          <button
-            type="submit"
-            disabled={!newComment.trim()}
-            className="text-primary font-semibold text-sm disabled:opacity-50 transition-opacity ml-2"
-          >
-            Post
-          </button>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="留下祝福..."
+              className="flex-1 outline-none text-sm bg-transparent"
+            />
+            <button
+              type="submit"
+              disabled={!newComment.trim()}
+              className="text-primary font-semibold text-sm disabled:opacity-50 transition-opacity shrink-0"
+            >
+              發送
+            </button>
+          </div>
         </form>
       </motion.div>
     </section>
