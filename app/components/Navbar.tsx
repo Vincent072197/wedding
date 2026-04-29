@@ -31,7 +31,7 @@ export default function Navbar() {
           href="/"
           className="font-serif text-xl md:text-2xl text-foreground font-semibold"
         >
-          V &amp; S
+          軒 &amp; 璇
         </Link>
         <div className="flex gap-4 md:gap-6 text-xs md:text-sm font-sans tracking-widest uppercase text-foreground/80">
           <Link href="/" className="hover:text-primary transition-colors">
