@@ -3,9 +3,10 @@ import { likePost } from "@/lib/queries/guestbook";
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const postId = parseInt(params.id);
+  const { id } = await params;
+  const postId = parseInt(id);
   const fingerprint = request.headers.get("x-forwarded-for") ?? "unknown";
   await likePost(postId, fingerprint);
   return NextResponse.json({ success: true });

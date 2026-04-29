@@ -3,17 +3,19 @@ import { deletePhoto, updatePhotoVisibility } from "@/lib/queries/gallery";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  await deletePhoto(parseInt(params.id));
+  const { id } = await params;
+  await deletePhoto(parseInt(id));
   return NextResponse.json({ success: true });
 }
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { isVisible } = await request.json();
-  await updatePhotoVisibility(parseInt(params.id), isVisible);
+  const { id } = await params;
+  await updatePhotoVisibility(parseInt(id), isVisible);
   return NextResponse.json({ success: true });
 }
