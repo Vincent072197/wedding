@@ -144,6 +144,7 @@ function Toast({
 
 export default function AdminPage() {
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [activeTab, setActiveTab] = useState<TabName>("Home");
   const [toast, setToast] = useState<{
     message: string;
@@ -228,20 +229,32 @@ export default function AdminPage() {
 
   // ─── Gallery Image Helpers ──────────────────────────────────────────────
 
-  const handleImageChange = (index: number, value: string) => {
-    const newImages = [...config.gallery.galleryImages];
-    newImages[index] = value;
-    updateGallery("galleryImages", newImages);
-  };
-
-  const addImage = () => {
-    updateGallery("galleryImages", [...config.gallery.galleryImages, ""]);
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setUploadingImage(true);
+    try {
+      const urls: string[] = [];
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/gallery/upload", { method: "POST", body: fd });
+        if (!res.ok) throw new Error("Upload failed");
+        const { url } = await res.json();
+        urls.push(url);
+      }
+      updateGallery("galleryImages", [...config.gallery.galleryImages, ...urls]);
+      setToast({ message: `${urls.length} 張照片上傳成功！`, type: "success" });
+    } catch {
+      setToast({ message: "上傳失敗，請再試一次。", type: "error" });
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
+    }
   };
 
   const removeImage = (index: number) => {
-    const newImages = config.gallery.galleryImages.filter(
-      (_, i) => i !== index,
-    );
+    const newImages = config.gallery.galleryImages.filter((_, i) => i !== index);
     updateGallery("galleryImages", newImages);
   };
 
@@ -356,7 +369,7 @@ export default function AdminPage() {
   );
 
   const renderGalleryTab = () => (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
         <FieldLabel>IG Post Caption (貼文文字)</FieldLabel>
         <TextArea
@@ -365,33 +378,56 @@ export default function AdminPage() {
           placeholder="e.g. We can't wait to share our special day..."
         />
       </div>
+
       <div>
-        <FieldLabel>Gallery Images — URLs (照片網址)</FieldLabel>
-        {config.gallery.galleryImages?.map((url, index) => (
-          <div key={index} className="flex gap-2 mb-2">
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => handleImageChange(index, e.target.value)}
-              className="flex-1 px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-all"
-              placeholder="https://..."
-            />
-            <button
-              type="button"
-              onClick={() => removeImage(index)}
-              className="px-3 py-2 bg-stone-200 text-stone-700 rounded-lg hover:bg-red-100 hover:text-red-600 transition-colors text-sm"
-            >
-              Remove
-            </button>
+        <FieldLabel>照片管理</FieldLabel>
+
+        {/* Upload button */}
+        <label className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
+          uploadingImage
+            ? "bg-stone-200 text-stone-400 cursor-not-allowed"
+            : "bg-primary text-white hover:bg-rose-600"
+        }`}>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            disabled={uploadingImage}
+            onChange={handleFileUpload}
+          />
+          {uploadingImage ? "上傳中..." : "+ 上傳照片"}
+        </label>
+        <p className="text-xs text-stone-400 mt-2">
+          支援 JPG、PNG、WebP，可一次選取多張。上傳後請點「Save All Changes」儲存。
+        </p>
+
+        {/* Image grid */}
+        {config.gallery.galleryImages.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+            {config.gallery.galleryImages.map((url, index) => (
+              <div key={index} className="relative aspect-square group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={`Photo ${index + 1}`}
+                  className="w-full h-full object-cover rounded-lg border border-stone-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={addImage}
-          className="mt-2 text-sm text-primary hover:underline font-semibold"
-        >
-          + Add Image URL
-        </button>
+        )}
+
+        {config.gallery.galleryImages.length === 0 && (
+          <p className="text-sm text-stone-400 mt-4">尚無照片，請上傳。</p>
+        )}
       </div>
     </div>
   );
