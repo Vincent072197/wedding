@@ -22,9 +22,8 @@ export default function IGPostBoard() {
   const [guestName, setGuestName] = useState("");
   const [config, setConfig] = useState({
     coupleNames: "",
-    galleryImages: ["/post01.jpg"],
-    igCaption:
-      "We can't wait to share our special day with all of you! Leave us a blessing below. ✨",
+    galleryImages: [],
+    igCaption: "",
   });
 
   useEffect(() => {
