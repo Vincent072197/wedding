@@ -95,7 +95,6 @@ export default function IGPostBoard() {
       }),
     });
     const newPost = await res.json();
-    setComments((prev) => [...prev, newPost]);
     setNewComment("");
     setGuestName("");
   };
