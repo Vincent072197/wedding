@@ -14,10 +14,11 @@ type Comment = {
 };
 
 export default function IGPostBoard() {
-  const [emblaRef] = useEmblaCarousel({ loop: true });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [newComment, setNewComment] = useState("");
   const [guestName, setGuestName] = useState("");
   const [config, setConfig] = useState({
@@ -25,7 +26,12 @@ export default function IGPostBoard() {
     galleryImages: [],
     igCaption: "",
   });
-
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on("select", () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    });
+  }, [emblaApi]);
   useEffect(() => {
     fetch("/api/config")
       .then((res) => res.json())
@@ -93,7 +99,7 @@ export default function IGPostBoard() {
         message: newComment.trim(),
       }),
     });
-    const newPost = await res.json();
+    await res.json();
     setNewComment("");
     setGuestName("");
   };
@@ -135,6 +141,16 @@ export default function IGPostBoard() {
               </div>
             ))}
           </div>
+          <ul className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+            {config.galleryImages.map((_, idx) => (
+              <li
+                key={`dot-${idx}`}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                  idx === selectedIndex ? "bg-white scale-125" : "bg-white/50"
+                }`}
+              ></li>
+            ))}
+          </ul>
         </div>
 
         {/* Action Bar */}
