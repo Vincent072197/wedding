@@ -1,5 +1,13 @@
-import { getApprovedPosts, createPost } from "@/lib/queries/guestbook";
+import { getApprovedPosts, getAllPosts, createPost } from "@/lib/queries/guestbook";
 import { NextResponse } from "next/server";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const posts = searchParams.get("all") === "true"
+    ? await getAllPosts()
+    : await getApprovedPosts();
+  return NextResponse.json(posts);
+}
 
 export async function POST(request: Request) {
   const { guestName, message } = await request.json();
@@ -11,9 +19,4 @@ export async function POST(request: Request) {
   }
   const post = await createPost(guestName, message);
   return NextResponse.json(post, { status: 201 });
-}
-
-export async function GET() {
-  const posts = await getApprovedPosts();
-  return NextResponse.json(posts);
 }

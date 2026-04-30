@@ -32,6 +32,10 @@ type SiteConfig = {
     shuttleInfo: string;
     mapEmbedUrl: string;
   };
+  theme: {
+    primaryColor: string;
+    bgColor: string;
+  };
 };
 
 const defaultConfig: SiteConfig = {
@@ -52,11 +56,15 @@ const defaultConfig: SiteConfig = {
     shuttleInfo: "",
     mapEmbedUrl: "",
   },
+  theme: {
+    primaryColor: "#f43f5e",
+    bgColor: "#fffafa",
+  },
 };
 
 // ─── Tab Definitions ────────────────────────────────────────────────────────
 
-const TABS = ["Home", "Gallery", "Menu", "Location"] as const;
+const TABS = ["Home", "Gallery", "Menu", "Location", "Theme"] as const;
 type TabName = (typeof TABS)[number];
 
 // ─── Reusable UI Components ─────────────────────────────────────────────────
@@ -164,6 +172,7 @@ export default function AdminPage() {
           gallery: { ...defaultConfig.gallery, ...data.gallery },
           menu: { ...defaultConfig.menu, ...data.menu },
           location: { ...defaultConfig.location, ...data.location },
+          theme: { ...defaultConfig.theme, ...data.theme },
         });
       })
       .catch((err) => console.error("Failed to load config", err));
@@ -224,6 +233,13 @@ export default function AdminPage() {
     setConfig((prev) => ({
       ...prev,
       location: { ...prev.location, [field]: value },
+    }));
+  };
+
+  const updateTheme = (field: keyof SiteConfig["theme"], value: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      theme: { ...prev.theme, [field]: value },
     }));
   };
 
@@ -615,11 +631,82 @@ export default function AdminPage() {
     </div>
   );
 
+  const renderThemeTab = () => (
+    <div className="space-y-6">
+      <div>
+        <FieldLabel>主色調（按鈕、強調色）</FieldLabel>
+        <div className="flex items-center gap-3">
+          <input
+            type="color"
+            value={config.theme.primaryColor}
+            onChange={(e) => updateTheme("primaryColor", e.target.value)}
+            className="w-10 h-10 rounded border border-stone-300 cursor-pointer p-0.5 shrink-0"
+          />
+          <TextInput
+            value={config.theme.primaryColor}
+            onChange={(v) => updateTheme("primaryColor", v)}
+            placeholder="#f43f5e"
+          />
+        </div>
+      </div>
+
+      <div>
+        <FieldLabel>背景色</FieldLabel>
+        <div className="flex items-center gap-3">
+          <input
+            type="color"
+            value={config.theme.bgColor}
+            onChange={(e) => updateTheme("bgColor", e.target.value)}
+            className="w-10 h-10 rounded border border-stone-300 cursor-pointer p-0.5 shrink-0"
+          />
+          <TextInput
+            value={config.theme.bgColor}
+            onChange={(v) => updateTheme("bgColor", v)}
+            placeholder="#fffafa"
+          />
+        </div>
+      </div>
+
+      {/* Live preview */}
+      <div className="rounded-xl border border-stone-200 p-5 bg-stone-50">
+        <p className="text-xs font-semibold text-stone-500 mb-3 uppercase tracking-wide">
+          即時預覽
+        </p>
+        <div className="flex gap-3 flex-wrap items-center">
+          <button
+            type="button"
+            style={{ backgroundColor: config.theme.primaryColor }}
+            className="px-4 py-2 text-white text-sm font-semibold rounded-lg"
+          >
+            按鈕樣式
+          </button>
+          <div
+            style={{ backgroundColor: config.theme.bgColor }}
+            className="px-4 py-2 text-stone-700 text-sm rounded-lg border border-stone-200"
+          >
+            背景色
+          </div>
+          <span
+            style={{ color: config.theme.primaryColor }}
+            className="text-sm font-semibold"
+          >
+            連結文字
+          </span>
+        </div>
+      </div>
+
+      <p className="text-xs text-stone-400">
+        儲存後重新整理頁面即可看到全站顏色變更。
+      </p>
+    </div>
+  );
+
   const tabContent: Record<TabName, () => React.ReactNode> = {
     Home: renderHomeTab,
     Gallery: renderGalleryTab,
     Menu: renderMenuTab,
     Location: renderLocationTab,
+    Theme: renderThemeTab,
   };
 
   // ─── Main Admin Layout ──────────────────────────────────────────────────
@@ -638,9 +725,7 @@ export default function AdminPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-serif text-3xl text-stone-800">Admin Panel</h1>
-          <span className="text-xs text-stone-400 font-sans">
-            Wedding Website CMS
-          </span>
+          <span className="text-xs text-stone-400 font-sans">Wedding Website CMS</span>
         </div>
 
         {/* Tabs */}

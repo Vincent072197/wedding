@@ -5,7 +5,7 @@ export async function getAllRsvps() {
     `
     SELECT * 
     FROM rsvp_guests
-    ORDER BY summitted_at DESC
+    ORDER BY submitted_at DESC
     `,
   );
   return result.rows;
