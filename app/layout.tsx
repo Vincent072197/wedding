@@ -58,7 +58,6 @@ export default async function RootLayout({
   }
 
   const { serif, sans } = FONT_PAIRS[fontPairKey];
-  const themeStyle = `:root { --primary: ${primaryColor}; --background: ${bgColor}; --font-serif: ${serif}; --font-sans: ${sans}; }`;
 
   const fontClasses = [
     playfair.variable, montserrat.variable,
@@ -71,10 +70,13 @@ export default async function RootLayout({
     <html
       lang="en"
       className={`${fontClasses} scroll-smooth antialiased`}
+      style={{
+        "--primary": primaryColor,
+        "--background": bgColor,
+        "--font-serif": serif,
+        "--font-sans": sans,
+      } as React.CSSProperties}
     >
-      <head>
-        <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
-      </head>
       <body className="min-h-screen bg-rose-50/50 font-sans text-stone-800 flex flex-col">
         {children}
       </body>
