@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import Image from "next/image";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 type Comment = {
   id: number;
@@ -44,6 +45,27 @@ export default function IGPostBoard() {
       .then((resp) => resp.json())
       .then((data) => setComments(data))
       .catch(console.error);
+
+    const channel = supabaseBrowser
+      .channel("guestbook")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "guestbook_posts",
+          filter: "is_approved=eq.true",
+        },
+        (payload) => {
+          const newPost = payload.new as Comment;
+          setComments((prev) => [...prev, newPost]);
+        },
+      )
+      .subscribe();
+    // 離開頁面時取消訂閱
+    return () => {
+      supabaseBrowser.removeChannel(channel);
+    };
   }, []);
 
   const handleText = config.coupleNames
@@ -145,17 +167,22 @@ export default function IGPostBoard() {
             {likesCount.toLocaleString()} 個讚
           </div>
 
-          <div className="text-sm mb-3">
+          <div className="text-sm mb-3 pb-3 border-b border-stone-100">
             <span className="font-semibold mr-2">{handleText}</span>
             {config.igCaption}
           </div>
 
           {/* Comments Section (留言區) */}
-          <div className="space-y-1 mb-4 max-h-32 overflow-y-auto custom-scrollbar">
+          {comments.length > 0 && (
+            <p className="text-xs text-stone-400 font-semibold uppercase tracking-widest mb-2">
+              賓客祝福
+            </p>
+          )}
+          <div className="space-y-1.5 mb-4 max-h-32 overflow-y-auto custom-scrollbar">
             {comments.map((c) => (
               <div key={c.id} className="text-sm">
                 <span className="font-semibold mr-2">{c.guest_name}</span>
-                <span>{c.message}</span>
+                <span className="text-stone-600">{c.message}</span>
               </div>
             ))}
           </div>

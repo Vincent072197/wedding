@@ -35,6 +35,7 @@ type SiteConfig = {
   theme: {
     primaryColor: string;
     bgColor: string;
+    fontPair: string;
   };
 };
 
@@ -59,6 +60,7 @@ const defaultConfig: SiteConfig = {
   theme: {
     primaryColor: "#f43f5e",
     bgColor: "#fffafa",
+    fontPair: "classic",
   },
 };
 
@@ -631,10 +633,53 @@ export default function AdminPage() {
     </div>
   );
 
+  const FONT_OPTIONS = [
+    {
+      id: "classic",
+      label: "經典優雅",
+      serifName: "Playfair Display",
+      sansName: "Montserrat",
+      serifVar: "--font-playfair",
+    },
+    {
+      id: "romantic",
+      label: "文藝浪漫",
+      serifName: "Cormorant Garamond",
+      sansName: "Lato",
+      serifVar: "--font-cormorant",
+    },
+    {
+      id: "luxury",
+      label: "奢華宮廷",
+      serifName: "Cinzel",
+      sansName: "Raleway",
+      serifVar: "--font-cinzel",
+    },
+    {
+      id: "modern",
+      label: "現代簡約",
+      serifName: "DM Serif Display",
+      sansName: "DM Sans",
+      serifVar: "--font-dm-serif",
+    },
+  ];
+
+  const THEME_DEFAULTS = { primaryColor: "#f43f5e", bgColor: "#fffafa", fontPair: "classic" };
+
   const renderThemeTab = () => (
     <div className="space-y-6">
+      {/* Color pickers */}
       <div>
-        <FieldLabel>主色調（按鈕、強調色）</FieldLabel>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-stone-700">主色調（按鈕、強調色）</span>
+          <button
+            type="button"
+            onClick={() => setConfig((prev) => ({ ...prev, theme: { ...prev.theme, primaryColor: THEME_DEFAULTS.primaryColor } }))}
+            className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
+          >
+            回預設
+          </button>
+        </div>
         <div className="flex items-center gap-3">
           <input
             type="color"
@@ -651,7 +696,16 @@ export default function AdminPage() {
       </div>
 
       <div>
-        <FieldLabel>背景色</FieldLabel>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-stone-700">背景色</span>
+          <button
+            type="button"
+            onClick={() => setConfig((prev) => ({ ...prev, theme: { ...prev.theme, bgColor: THEME_DEFAULTS.bgColor } }))}
+            className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
+          >
+            回預設
+          </button>
+        </div>
         <div className="flex items-center gap-3">
           <input
             type="color"
@@ -664,6 +718,45 @@ export default function AdminPage() {
             onChange={(v) => updateTheme("bgColor", v)}
             placeholder="#fffafa"
           />
+        </div>
+      </div>
+
+      {/* Font pair picker */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-stone-700">字型風格</span>
+          <button
+            type="button"
+            onClick={() => setConfig((prev) => ({ ...prev, theme: { ...prev.theme, fontPair: THEME_DEFAULTS.fontPair } }))}
+            className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
+          >
+            回預設
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {FONT_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => updateTheme("fontPair", opt.id)}
+              className={`border-2 rounded-xl p-4 text-left transition-all ${
+                config.theme.fontPair === opt.id
+                  ? "border-primary bg-primary/5"
+                  : "border-stone-200 hover:border-stone-300 bg-white"
+              }`}
+            >
+              <p
+                style={{ fontFamily: `var(${opt.serifVar})` }}
+                className="text-2xl text-stone-800 mb-1 leading-none"
+              >
+                Aa
+              </p>
+              <p className="text-xs font-semibold text-stone-700 mt-2">
+                {opt.label}
+              </p>
+              <p className="text-xs text-stone-400 truncate">{opt.serifName}</p>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -696,7 +789,7 @@ export default function AdminPage() {
       </div>
 
       <p className="text-xs text-stone-400">
-        儲存後重新整理頁面即可看到全站顏色變更。
+        儲存後重新整理頁面即可看到全站顏色與字型變更。
       </p>
     </div>
   );
@@ -729,13 +822,13 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-white rounded-t-xl border border-b-0 border-stone-200 p-1.5">
+        <div className="flex gap-1 bg-white rounded-t-xl border border-b-0 border-stone-200 p-1.5 overflow-x-auto scrollbar-hide">
           {TABS.map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
+              className={`shrink-0 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                 activeTab === tab
                   ? "bg-primary text-white shadow-md"
                   : "text-stone-500 hover:bg-stone-100 hover:text-stone-700"

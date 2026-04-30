@@ -33,6 +33,7 @@ function StatCard({ label, value, color }: { label: string; value: number; color
 export default function AdminRsvpPage() {
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingTable, setSavingTable] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/rsvp")
@@ -45,6 +46,21 @@ export default function AdminRsvpPage() {
   const declining = rsvps.filter((r) => r.attending === "no");
   const totalAdults = attending.reduce((sum, r) => sum + (r.adult_count ?? 0), 0);
   const totalChildren = attending.reduce((sum, r) => sum + (r.child_count ?? 0), 0);
+
+  const handleTableSave = async (id: number, value: string) => {
+    const tableNumber = value === "" ? null : parseInt(value);
+    if (value !== "" && isNaN(tableNumber!)) return;
+    setSavingTable(id);
+    await fetch(`/api/rsvp/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tableNumber }),
+    });
+    setRsvps((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, table_number: tableNumber } : r)),
+    );
+    setSavingTable(null);
+  };
 
   const exportCSV = () => {
     const header = ["姓名", "電話", "出席", "大人", "小孩", "餐點", "留言", "桌號", "填寫時間"];
@@ -104,7 +120,7 @@ export default function AdminRsvpPage() {
               <table className="w-full text-sm">
                 <thead className="bg-stone-50 border-b border-stone-200">
                   <tr>
-                    {["姓名", "電話", "出席", "大人", "小孩", "餐點", "留言", "填寫時間"].map((h) => (
+                    {["姓名", "電話", "出席", "大人", "小孩", "餐點", "留言", "桌號", "填寫時間"].map((h) => (
                       <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide whitespace-nowrap">
                         {h}
                       </th>
@@ -131,6 +147,26 @@ export default function AdminRsvpPage() {
                         {r.attending === "yes" ? (MEAL_LABEL[r.meal_preference ?? ""] ?? "—") : "—"}
                       </td>
                       <td className="px-4 py-3 text-stone-500 max-w-xs truncate">{r.note ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        {r.attending === "yes" ? (
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={1}
+                              defaultValue={r.table_number ?? ""}
+                              onBlur={(e) => handleTableSave(r.id, e.target.value)}
+                              onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+                              placeholder="—"
+                              className="w-14 text-center text-sm border border-stone-200 hover:border-stone-300 focus:border-primary rounded-lg px-1 py-1 outline-none transition-colors"
+                            />
+                            {savingTable === r.id && (
+                              <span className="absolute -right-4 top-1.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-stone-300">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-stone-400 whitespace-nowrap text-xs">
                         {new Date(r.submitted_at).toLocaleString("zh-TW", { dateStyle: "short", timeStyle: "short" })}
                       </td>

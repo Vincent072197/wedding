@@ -45,3 +45,11 @@ body {
   100% { transform: translateY(105vh) rotate(540deg); opacity: 0; }
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+

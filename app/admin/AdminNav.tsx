@@ -14,7 +14,7 @@ export default function AdminNav() {
   if (pathname === "/admin/login") return null;
 
   return (
-    <nav className="bg-white border-b border-stone-200 px-4 md:px-8 py-3 flex items-center gap-1 md:gap-2 sticky top-0 z-40">
+    <nav className="bg-white border-b border-stone-200 px-4 md:px-8 py-3 flex items-center gap-1 md:gap-2 sticky top-0 z-40 overflow-x-auto scrollbar-hide">
       <span className="font-serif text-stone-800 mr-3 text-sm md:text-base shrink-0">
         Wedding Admin
       </span>

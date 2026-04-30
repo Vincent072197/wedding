@@ -46,9 +46,17 @@ export async function upsertRsvp(data: {
   return result.rows[0];
 }
 
-export async function assignTable(id: number, tableNumber: number) {
+export async function assignTable(id: number, tableNumber: number | null) {
   await db.query(`UPDATE rsvp_guests SET table_number = $1 WHERE id = $2`, [
     tableNumber,
     id,
   ]);
+}
+
+export async function lookupRsvpByPhone(phone: string) {
+  const result = await db.query(
+    `SELECT name, attending, table_number FROM rsvp_guests WHERE phone = $1`,
+    [phone],
+  );
+  return result.rows[0] ?? null;
 }
