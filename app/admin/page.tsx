@@ -12,6 +12,7 @@ type SiteConfig = {
     coupleNames: string;
     heroText: string;
     weddingDate: string;
+    rsvpDeadline: string;
   };
   gallery: {
     galleryImages: string[];
@@ -40,7 +41,7 @@ type SiteConfig = {
 };
 
 const defaultConfig: SiteConfig = {
-  home: { coupleNames: "", heroText: "", weddingDate: "" },
+  home: { coupleNames: "", heroText: "", weddingDate: "", rsvpDeadline: "" },
   gallery: { galleryImages: [], igCaption: "" },
   menu: {
     menuTitle: "",
@@ -256,12 +257,18 @@ export default function AdminPage() {
       for (const file of files) {
         const fd = new FormData();
         fd.append("file", file);
-        const res = await fetch("/api/gallery/upload", { method: "POST", body: fd });
+        const res = await fetch("/api/gallery/upload", {
+          method: "POST",
+          body: fd,
+        });
         if (!res.ok) throw new Error("Upload failed");
         const { url } = await res.json();
         urls.push(url);
       }
-      updateGallery("galleryImages", [...config.gallery.galleryImages, ...urls]);
+      updateGallery("galleryImages", [
+        ...config.gallery.galleryImages,
+        ...urls,
+      ]);
       setToast({ message: `${urls.length} 張照片上傳成功！`, type: "success" });
     } catch {
       setToast({ message: "上傳失敗，請再試一次。", type: "error" });
@@ -272,7 +279,9 @@ export default function AdminPage() {
   };
 
   const removeImage = (index: number) => {
-    const newImages = config.gallery.galleryImages.filter((_, i) => i !== index);
+    const newImages = config.gallery.galleryImages.filter(
+      (_, i) => i !== index,
+    );
     updateGallery("galleryImages", newImages);
   };
 
@@ -381,6 +390,16 @@ export default function AdminPage() {
           className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
         />
       </div>
+      <div>
+        <FieldLabel>RSVP 截止日期（顯示於出席確認頁）</FieldLabel>
+        <input
+          type="date"
+          value={config.home.rsvpDeadline || ""}
+          onChange={(e) => updateHome("rsvpDeadline", e.target.value)}
+          className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30       
+  focus:border-primary transition-all"
+        />
+      </div>
     </div>
   );
 
@@ -399,11 +418,13 @@ export default function AdminPage() {
         <FieldLabel>照片管理</FieldLabel>
 
         {/* Upload button */}
-        <label className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
-          uploadingImage
-            ? "bg-stone-200 text-stone-400 cursor-not-allowed"
-            : "bg-primary text-white hover:bg-rose-600"
-        }`}>
+        <label
+          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
+            uploadingImage
+              ? "bg-stone-200 text-stone-400 cursor-not-allowed"
+              : "bg-primary text-white hover:bg-rose-600"
+          }`}
+        >
           <input
             type="file"
             accept="image/*"
@@ -415,7 +436,8 @@ export default function AdminPage() {
           {uploadingImage ? "上傳中..." : "+ 上傳照片"}
         </label>
         <p className="text-xs text-stone-400 mt-2">
-          支援 JPG、PNG、WebP，可一次選取多張。上傳後請點「Save All Changes」儲存。
+          支援 JPG、PNG、WebP，可一次選取多張。上傳後請點「Save All
+          Changes」儲存。
         </p>
 
         {/* Image grid */}
@@ -664,17 +686,31 @@ export default function AdminPage() {
     },
   ];
 
-  const THEME_DEFAULTS = { primaryColor: "#f43f5e", bgColor: "#fffafa", fontPair: "classic" };
+  const THEME_DEFAULTS = {
+    primaryColor: "#f43f5e",
+    bgColor: "#fffafa",
+    fontPair: "classic",
+  };
 
   const renderThemeTab = () => (
     <div className="space-y-6">
       {/* Color pickers */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-stone-700">主色調（按鈕、強調色）</span>
+          <span className="text-sm font-semibold text-stone-700">
+            主色調（按鈕、強調色）
+          </span>
           <button
             type="button"
-            onClick={() => setConfig((prev) => ({ ...prev, theme: { ...prev.theme, primaryColor: THEME_DEFAULTS.primaryColor } }))}
+            onClick={() =>
+              setConfig((prev) => ({
+                ...prev,
+                theme: {
+                  ...prev.theme,
+                  primaryColor: THEME_DEFAULTS.primaryColor,
+                },
+              }))
+            }
             className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
           >
             回預設
@@ -700,7 +736,12 @@ export default function AdminPage() {
           <span className="text-sm font-semibold text-stone-700">背景色</span>
           <button
             type="button"
-            onClick={() => setConfig((prev) => ({ ...prev, theme: { ...prev.theme, bgColor: THEME_DEFAULTS.bgColor } }))}
+            onClick={() =>
+              setConfig((prev) => ({
+                ...prev,
+                theme: { ...prev.theme, bgColor: THEME_DEFAULTS.bgColor },
+              }))
+            }
             className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
           >
             回預設
@@ -727,7 +768,12 @@ export default function AdminPage() {
           <span className="text-sm font-semibold text-stone-700">字型風格</span>
           <button
             type="button"
-            onClick={() => setConfig((prev) => ({ ...prev, theme: { ...prev.theme, fontPair: THEME_DEFAULTS.fontPair } }))}
+            onClick={() =>
+              setConfig((prev) => ({
+                ...prev,
+                theme: { ...prev.theme, fontPair: THEME_DEFAULTS.fontPair },
+              }))
+            }
             className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
           >
             回預設
@@ -818,7 +864,9 @@ export default function AdminPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-serif text-3xl text-stone-800">Admin Panel</h1>
-          <span className="text-xs text-stone-400 font-sans">Wedding Website CMS</span>
+          <span className="text-xs text-stone-400 font-sans">
+            Wedding Website CMS
+          </span>
         </div>
 
         {/* Tabs */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
 type RsvpForm = {
@@ -25,6 +25,7 @@ const defaultForm: RsvpForm = {
 
 export default function RsvpPage() {
   const [form, setForm] = useState<RsvpForm>(defaultForm);
+  const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
@@ -32,6 +33,14 @@ export default function RsvpPage() {
   const update = (field: keyof RsvpForm, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.home?.rsvpDeadline) setDeadline(data.home.rsvpDeadline);
+      });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,10 +77,25 @@ export default function RsvpPage() {
       <main className="flex-1 w-full pt-32 pb-20 px-4 flex justify-center">
         <div className="w-full max-w-lg">
           <div className="text-center mb-10">
-            <h1 className="font-serif text-4xl text-stone-800 mb-2">出席確認</h1>
-            <p className="font-sans text-stone-500 text-sm tracking-wide">
-              請於 2026 年 9 月 1 日前回覆
-            </p>
+            <h1 className="font-serif text-4xl text-stone-800 mb-2">
+              出席確認
+            </h1>
+            {deadline && (
+              <p className="text-center text-sm text-stone-500 mb-6">
+                請於{" "}
+                <span className="font-semibold text-stone-700">
+                  {new Date(deadline + "T00:00:00").toLocaleDateString(
+                    "zh-TW",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    },
+                  )}
+                </span>{" "}
+                前完成回覆
+              </p>
+            )}
           </div>
 
           <form
@@ -128,9 +152,7 @@ export default function RsvpPage() {
                         : "border-stone-300 text-stone-600 hover:border-primary"
                     }`}
                   >
-                    {option === "yes"
-                      ? "✓ 欣然接受"
-                      : "✗ 婉拒出席"}
+                    {option === "yes" ? "✓ 欣然接受" : "✗ 婉拒出席"}
                   </button>
                 ))}
               </div>
@@ -204,9 +226,7 @@ export default function RsvpPage() {
             </div>
 
             {status === "error" && (
-              <p className="text-red-500 text-sm">
-                發生錯誤，請再試一次。
-              </p>
+              <p className="text-red-500 text-sm">發生錯誤，請再試一次。</p>
             )}
 
             <button
