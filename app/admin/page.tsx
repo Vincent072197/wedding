@@ -366,7 +366,7 @@ export default function AdminPage() {
         <TextInput
           value={config.home.coupleNames}
           onChange={(v) => updateHome("coupleNames", v)}
-          placeholder="e.g. Vincent & Sister"
+          placeholder="新人名稱"
         />
       </div>
       <div>
@@ -374,7 +374,7 @@ export default function AdminPage() {
         <TextInput
           value={config.home.heroText}
           onChange={(v) => updateHome("heroText", v)}
-          placeholder="e.g. We decided on forever"
+          placeholder="首頁標語"
         />
       </div>
       <div>

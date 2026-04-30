@@ -21,9 +21,9 @@ type MenuConfig = {
 };
 
 const defaultMenuConfig: MenuConfig = {
-  menuTitle: "婚宴菜單",
-  menuSubtitle: "共赴幸福盛宴",
-  menuFooterText: "祝各位用餐愉快",
+  menuTitle: "",
+  menuSubtitle: "",
+  menuFooterText: "",
   menuCategories: [],
 };
 
