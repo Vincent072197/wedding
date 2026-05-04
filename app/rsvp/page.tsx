@@ -9,7 +9,7 @@ type RsvpForm = {
   attending: "yes" | "no" | "";
   adultCount: number;
   childCount: number;
-  mealPreference: string;
+  mealPreferences: string[];
   note: string;
 };
 
@@ -19,19 +19,31 @@ const defaultForm: RsvpForm = {
   attending: "",
   adultCount: 1,
   childCount: 0,
-  mealPreference: "regular",
+  mealPreferences: ["regular"],
   note: "",
 };
 
 export default function RsvpPage() {
   const [form, setForm] = useState<RsvpForm>(defaultForm);
   const [deadline, setDeadline] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const update = (field: keyof RsvpForm, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateCount = (field: "adultCount" | "childCount", value: number) => {
+    setForm((prev) => {
+      const adults = field === "adultCount" ? value : prev.adultCount;
+      const children = field === "childCount" ? value : prev.childCount;
+      const total = adults + children;
+      const current = prev.mealPreferences;
+      const mealPreferences =
+        total > current.length
+          ? [...current, ...Array(total - current.length).fill("regular")]
+          : current.slice(0, Math.max(total, 1));
+      return { ...prev, [field]: value, mealPreferences };
+    });
   };
 
   useEffect(() => {
@@ -45,13 +57,14 @@ export default function RsvpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
-
     const res = await fetch("/api/rsvp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        mealPreference: JSON.stringify(form.mealPreferences),
+      }),
     });
-
     setStatus(res.ok ? "success" : "error");
   };
 
@@ -84,14 +97,11 @@ export default function RsvpPage() {
               <p className="text-center text-sm text-stone-500 mb-6">
                 請於{" "}
                 <span className="font-semibold text-stone-700">
-                  {new Date(deadline + "T00:00:00").toLocaleDateString(
-                    "zh-TW",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    },
-                  )}
+                  {new Date(deadline + "T00:00:00").toLocaleDateString("zh-TW", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </span>{" "}
                 前完成回覆
               </p>
@@ -171,9 +181,7 @@ export default function RsvpPage() {
                       type="number"
                       min={1}
                       value={form.adultCount}
-                      onChange={(e) =>
-                        update("adultCount", parseInt(e.target.value))
-                      }
+                      onChange={(e) => updateCount("adultCount", parseInt(e.target.value))}
                       className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
                     />
                   </div>
@@ -185,28 +193,43 @@ export default function RsvpPage() {
                       type="number"
                       min={0}
                       value={form.childCount}
-                      onChange={(e) =>
-                        update("childCount", parseInt(e.target.value))
-                      }
+                      onChange={(e) => updateCount("childCount", parseInt(e.target.value))}
                       className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
 
-                {/* Meal preference */}
-                <div>
-                  <label className="block text-sm font-semibold text-stone-700 mb-2">
+                {/* Meal preferences per person */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold text-stone-700">
                     餐點需求
                   </label>
-                  <select
-                    value={form.mealPreference}
-                    onChange={(e) => update("mealPreference", e.target.value)}
-                    className="w-full px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
-                  >
-                    <option value="regular">一般</option>
-                    <option value="vegetarian">素食</option>
-                    <option value="vegan">全素</option>
-                  </select>
+                  {form.mealPreferences.map((pref, idx) => {
+                    const isChild = idx >= form.adultCount;
+                    const label = isChild
+                      ? `小孩 ${idx - form.adultCount + 1}`
+                      : `大人 ${idx + 1}`;
+                    return (
+                      <div key={idx} className="flex items-center gap-3">
+                        <span className="text-sm text-stone-500 w-12 shrink-0">
+                          {label}
+                        </span>
+                        <select
+                          value={pref}
+                          onChange={(e) => {
+                            const updated = [...form.mealPreferences];
+                            updated[idx] = e.target.value;
+                            setForm((prev) => ({ ...prev, mealPreferences: updated }));
+                          }}
+                          className="flex-1 px-4 py-2 border border-stone-300 rounded focus:outline-none focus:border-primary"
+                        >
+                          <option value="regular">一般</option>
+                          <option value="vegetarian">素食</option>
+                          <option value="vegan">全素</option>
+                        </select>
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -231,14 +254,8 @@ export default function RsvpPage() {
 
             <button
               type="submit"
-              disabled={
-                !form.name ||
-                !form.phone ||
-                !form.attending ||
-                status === "loading"
-              }
-              className="w-full bg-primary text-white py-3 rounded font-semibold hover:bg-rose-600 transition-colors               
-  disabled:opacity-50"
+              disabled={!form.name || !form.phone || !form.attending || status === "loading"}
+              className="w-full bg-primary text-white py-3 rounded font-semibold hover:bg-rose-600 transition-colors disabled:opacity-50"
             >
               {status === "loading" ? "送出中..." : "送出回覆"}
             </button>
